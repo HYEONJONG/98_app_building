@@ -1,3 +1,10 @@
+https://algotrading101.com/learn/yahoo-finance-api-guide/
+https://stackoverflow.com/questions/19782075/how-to-stop-terminate-a-python-script-from-running/34029481
+http://theautomatic.net/2018/07/31/how-to-get-live-stock-prices-with-python/
+https://www.r-bloggers.com/2018/07/how-to-get-live-stock-prices-with-python/
+https://finance.yahoo.com/quote/AMZN/holders?p=AMZN
+
+
 import pandas as pd
 from pandas import DataFrame
 pd.set_option('display.max_rows', 500)
