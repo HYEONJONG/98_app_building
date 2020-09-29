@@ -1,0 +1,43 @@
+import pandas as pd
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
+
+# Stock price from yahoo_fin
+from yahoo_fin.stock_info import *
+get_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
+
+# get list of S&P 500 tickers
+#=======================
+# check kospi & kosdaq
+sp = tickers_sp500()
+t_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
+
+# check data
+price_data = {ticker : get_data(ticker) for ticker in sp}
+#=======================
+
+# Financial statement & others
+income_statement = get_income_statement("amzn")
+balance_sheet = get_balance_sheet("amzn")
+cash_flow = get_cash_flow("amzn")
+
+#=======================
+# check file format
+holders = get_holders("amzn")
+info = holders["Direct Holders (Forms 3 and 4)"]
+print(info.Holder[1])
+print(info.% Out[1])
+df = pd.DataFrame.from_dict(holders, orient="index")
+df.to_csv("data.csv")
+#=======================
+
+
+#=======================
+# get list of kospi and kosdaq
+
+# get list of Dow stocks
+dow_list = tickers_dow()
+# get list of NASDAQ stocks
+nasdaq_list = tickers_nasdaq()
+#=======================
