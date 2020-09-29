@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas import DataFrame
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
@@ -22,16 +23,12 @@ income_statement = get_income_statement("amzn")
 balance_sheet = get_balance_sheet("amzn")
 cash_flow = get_cash_flow("amzn")
 
-#=======================
-# check file format
 holders = get_holders("amzn")
 info = holders["Direct Holders (Forms 3 and 4)"]
-print(info.Holder[1])
-print(info.% Out[1])
-df = pd.DataFrame.from_dict(holders, orient="index")
+type(info); list(info.columns)
+df = DataFrame(info, columns=['Holder','% Out'])
+print(df)
 df.to_csv("data.csv")
-#=======================
-
 
 #=======================
 # get list of kospi and kosdaq
