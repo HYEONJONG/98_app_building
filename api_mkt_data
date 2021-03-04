@@ -5,7 +5,13 @@ https://www.r-bloggers.com/2018/07/how-to-get-live-stock-prices-with-python/
 https://finance.yahoo.com/quote/AMZN/holders?p=AMZN
 
 import pandas as pd
-from pandas import DataFrame
+from yahoo_fin.stock_info import *
+from pandas import Series, DataFrame
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+import os
+
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
@@ -14,41 +20,123 @@ pd.set_option('display.width', 1000)
 sp = tickers_sp500()
 tickers_sp500(True)
 
-tickers = tickers_nasdaq()
+nasdaq = tickers_nasdaq()
 tickers_nasdaq(True)
 
-tickers = tickers_dow()
+dow = tickers_dow()
 dow_table = tickers_dow(True)
 
-tickers = tickers_ftse100()
+ftse100 = tickers_ftse100()
 tickers_ftse100(True)
 
+#=====================================================================
 # Stock price from yahoo_fin
-from yahoo_fin.stock_info import *
-ts=get_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
+#=====================================================================
+stock="amzn"
+start_date="01/01/2020"
+yesterday = datetime.now() - timedelta(1)
+type(yesterday)
+datetime.strftime(yesterday, '%m/%d/%Y')
+
+ts=get_data(stock, start_date = start_date, end_date = yesterday)
 close=ts["close"] # The adjusted closing price amends a stock's closing price to reflect that stock's value after accounting for any corporate actions
+plt.plot(close)
+file='\\datasets\\price.csv'
+close.to_csv(current_path + file)
 
+#=====================================================================
 # Financial statement & others
-income_statement = get_income_statement("amzn")
-balance_sheet = get_balance_sheet("amzn")
-cash_flow = get_cash_flow("amzn")
+#=====================================================================
+stock="amzn"
+income_statement = get_income_statement(stock, yearly=False)
+balance_sheet = get_balance_sheet(stock, yearly=False) # quaterly data
+cash_flow = get_cash_flow(stock)
+holders = get_holders(stock)
 
-holders = get_holders("amzn")
 info = holders["Direct Holders (Forms 3 and 4)"]
 type(info); list(info.columns)
-df = DataFrame(info, columns=['Holder','% Out'])
-print(df)
-df.to_csv("data.csv")
+info=DataFrame(info, columns=['Holder','% Out'])
+file='\\datasets\\holders.csv'
+df.to_csv(current_path + file)
 
+file='\\datasets\\income_state.csv'
+income_statement.to_csv(current_path + file)
+
+#=====================================================================
 # News from Yahoo finance RSS feeds
+#=====================================================================
+stock="nflx"
+from pprint import pprint as pp
 from yahoo_fin import news
-news=news.get_yf_rss("nflx")
-news
-#=======================
-# get list of kospi and kosdaq
-# check data
+news=news.get_yf_rss(stock)
+pp(news)
+df = pd.DataFrame(news,columns = ['title','published','summary'])
+df.tail()
+# saving csv file using path
+current_path = os.getcwd()
+file='\\datasets\\news.csv'
+df.to_csv(current_path + file)
+
+#=====================================================================
+# Portfolio
+#=====================================================================
+stock=["YUM","AMZN"]
 price_data = {ticker : get_data(ticker) for ticker in sp}
+pp(price_data)  # for dictionary: type(price_data)
 
-#=======================
+price_data[stock]["adjclose"]
 
-#=======================
+df = pd.DataFrame(news,columns = ['title','published','summary'])
+
+price_data.head()
+
+# saving csv file using path
+current_path = os.getcwd()
+file='\\datasets\\price_data.csv'
+price_data.to_csv(current_path + file)
+
+ret_m=ret.groupby('Year').sum()
+ret_m.head(); ret_m.tail()
+
+df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
+df.head(); df.tail()
+rets=[]; vol=[]
+for ticker in list(df):
+    ret=np.log(df[ticker]).diff()             # Log Return
+    ret=ret.dropna()
+    r=np.mean(ret); v=np.std(ret)
+    rets.append(r*252)
+    vol.append(v*sqrt(252))
+
+plt.scatter(vol,rets,marker='o')
+plt.show()
+frame=DataFrame(np.random.randn(4,3),columns=['b','d','e'],index=['utah','ohio','texas','oregon'])
+frame
+
+#=====================================================================
+# Monthly Returns
+#=====================================================================
+df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
+df.head(); df.tail()
+ret=np.log(df.MSCI_AC_WORLD).diff()             # Log Return
+ret=ret.dropna(); ret.head(); ret.tail()
+ret=pd.DataFrame(ret)
+type(ret); len(ret);
+
+ret['Month']=ret.index.month
+ret['Year']=ret.index.year
+ret.head(); ret.tail()
+
+ret_m=ret.groupby(['Year','Month']).sum()
+ret_m.head(); ret_m.tail()
+ret_m.to_csv('ret_m.csv')
+
+
+
+# Merging datasets by date
+df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
+df=pd.DataFrame(df); us=pd.DataFrame(df.us);uk=pd.DataFrame(df.uk)
+uk.head(); uk.tail()
+
+pd.merge(us,uk,left_index=True,right_index=True)
+pd.merge(us,uk[3:],left_index=True,right_index=True)
