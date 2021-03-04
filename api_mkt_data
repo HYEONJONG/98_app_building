@@ -4,26 +4,29 @@ http://theautomatic.net/2018/07/31/how-to-get-live-stock-prices-with-python/
 https://www.r-bloggers.com/2018/07/how-to-get-live-stock-prices-with-python/
 https://finance.yahoo.com/quote/AMZN/holders?p=AMZN
 
-
 import pandas as pd
 from pandas import DataFrame
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
+# get list of tickers
+sp = tickers_sp500()
+tickers_sp500(True)
+
+tickers = tickers_nasdaq()
+tickers_nasdaq(True)
+
+tickers = tickers_dow()
+dow_table = tickers_dow(True)
+
+tickers = tickers_ftse100()
+tickers_ftse100(True)
+
 # Stock price from yahoo_fin
 from yahoo_fin.stock_info import *
-get_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
-
-# get list of S&P 500 tickers
-#=======================
-# check kospi & kosdaq
-sp = tickers_sp500()
-t_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
-
-# check data
-price_data = {ticker : get_data(ticker) for ticker in sp}
-#=======================
+ts=get_data("amzn", start_date = "01/01/2017", end_date = "01/31/2017")
+close=ts["close"] # The adjusted closing price amends a stock's closing price to reflect that stock's value after accounting for any corporate actions
 
 # Financial statement & others
 income_statement = get_income_statement("amzn")
@@ -37,11 +40,15 @@ df = DataFrame(info, columns=['Holder','% Out'])
 print(df)
 df.to_csv("data.csv")
 
+# News from Yahoo finance RSS feeds
+from yahoo_fin import news
+news=news.get_yf_rss("nflx")
+news
 #=======================
 # get list of kospi and kosdaq
+# check data
+price_data = {ticker : get_data(ticker) for ticker in sp}
 
-# get list of Dow stocks
-dow_list = tickers_dow()
-# get list of NASDAQ stocks
-nasdaq_list = tickers_nasdaq()
+#=======================
+
 #=======================
