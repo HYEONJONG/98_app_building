@@ -30,19 +30,49 @@ ftse100 = tickers_ftse100()
 tickers_ftse100(True)
 
 #=====================================================================
-# Stock price from yahoo_fin
+# get data from yahoo_fin
 #=====================================================================
-stock="amzn"
+stock="SPY"
 start_date="01/01/2020"
 yesterday = datetime.now() - timedelta(1)
 type(yesterday)
 datetime.strftime(yesterday, '%m/%d/%Y')
+interval="1mo"       # 1d(default), 1wk, 1mo
 
-ts=get_data(stock, start_date = start_date, end_date = yesterday)
+ts=get_data(stock, start_date = start_date, end_date = yesterday, interval=interval)
 close=ts["close"] # The adjusted closing price amends a stock's closing price to reflect that stock's value after accounting for any corporate actions
 plt.plot(close)
 file='\\datasets\\price.csv'
 close.to_csv(current_path + file)
+
+#=====================================================================
+# day gainer/loser/active/dividend
+#=====================================================================
+stock="SPY"
+gain=get_day_gainers()  # Scrapes the top 100 (at most) stocks with the largest gains (on the given trading day)
+gain.head(10)
+lose=get_day_losers()
+active=get_day_most_active()  # Volume, Currencies in USD
+get_dividends(stock, "01-01-2010") # dividends from 2010 onward
+
+#=====================================================================
+# earnings
+#=====================================================================
+stock="nflx"
+earnings=get_earnings(stock)
+earnings
+earnings['quarterly_results']          # Earnings per Share
+earnings['quarterly_revenue_earnings'] # USD
+
+hist = get_earnings_history('msft')
+pd.DataFrame(hist)[['startdatetime','epsactual','epsestimate','epssurprisepct']]
+
+#=====================================================================
+# Get currencies
+#=====================================================================
+cur="KRW=X"
+ts=get_data(cur, start_date = start_date, end_date = yesterday)
+ts["close"].tail(1)
 
 #=====================================================================
 # Financial statement & others
