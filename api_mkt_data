@@ -1,183 +1,65 @@
-https://algotrading101.com/learn/yahoo-finance-api-guide/
-https://stackoverflow.com/questions/19782075/how-to-stop-terminate-a-python-script-from-running/34029481
-http://theautomatic.net/2018/07/31/how-to-get-live-stock-prices-with-python/
-https://www.r-bloggers.com/2018/07/how-to-get-live-stock-prices-with-python/
-https://finance.yahoo.com/quote/AMZN/holders?p=AMZN
+# streamlit run market_intelligence_e.py
 
+import streamlit as st
+import yfinance as yf
 import pandas as pd
-from yahoo_fin.stock_info import *
-from pandas import Series, DataFrame
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import cufflinks as cf
 from datetime import datetime, timedelta
-import os
 
-# saving csv file using path
-current_path = os.getcwd()
+# App title
+st.markdown("# Market intelligence")
+st.markdown("Shown are the stock price data and fundamentals for US listed companies")
+st.markdown("**Notifications**")
+st.markdown("- Data retrieved from yahoo finance\n"
+            "- Test version 2021-03-08")
 
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
-
-# get list of tickers
-sp = tickers_sp500()
-tickers_sp500(True)
-
-nasdaq = tickers_nasdaq()
-tickers_nasdaq(True)
-
-dow = tickers_dow()
-dow_table = tickers_dow(True)
-
-ftse100 = tickers_ftse100()
-tickers_ftse100(True)
-
-#=====================================================================
-# get historical data from yahoo_fin
-#=====================================================================
-stock="SPY"
-start_date="01/01/2020"
+# Sidebar
+st.sidebar.subheader('Search stock')
+ago = datetime.now() - timedelta(365)
 yesterday = datetime.now() - timedelta(1)
-type(yesterday)
-datetime.strftime(yesterday, '%m/%d/%Y')
-interval="1mo"       # 1d(default), 1wk, 1mo
-
-ts=get_data(stock, start_date = start_date, end_date = yesterday, interval=interval)
-close=ts["close"] # The adjusted closing price amends a stock's closing price to reflect that stock's value after accounting for any corporate actions
-plt.plot(close)
-file='\\datasets\\price.csv'
-close.to_csv(current_path + file)
-
-#=====================================================================
-# get market price
-#=====================================================================
-stock="SPY"
-get_live_price(stock)
-get_market_status() # currently (“PRE”), (“OPEN”), (“POST”), (“CLOSED”): +"US Market"
-get_premarket_price(stock) # if available / applicable
-get_postmarket_price(stock) # if available / applicable
-
-pp(get_quote_data(stock)) # Scrapes a collection of over 70 data points for an input ticker from Yahoo Finance
-pp(get_quote_table(stock)) # Scrapes the primary table
-pp(get_stats(stock)) # Primary statistics
-(get_stats_valuation(stock)) # Primary statistics
-get_stats_valuation('amzn')
-
-#=====================================================================
-# day gainer/loser/active/dividend
-#=====================================================================
-stock="SPY"
-gain=get_day_gainers()  # Scrapes the top 100 (at most) stocks with the largest gains (on the given trading day)
-gain.head(10)
-lose=get_day_losers()
-active=get_day_most_active()  # Volume, Currencies in USD
-get_dividends(stock, "01-01-2010") # dividends from 2010 onward
-
-get_undervalued_large_caps()
-
-#=====================================================================
-# Get currencies
-#=====================================================================
-cur="KRW=X"
-ts=get_data(cur, start_date = start_date, end_date = yesterday)
-ts["close"].tail(1)
-
-#=====================================================================
-# Financial statement & others
-#=====================================================================
-stock="amzn"
-income_statement = get_income_statement(stock, yearly=False)
-file = '\\datasets\\income_state.csv'
-income_statement.to_csv(current_path + file)
-balance_sheet = get_balance_sheet(stock, yearly=False) # quaterly data
-cash_flow = get_cash_flow(stock)
-
-earnings=get_earnings(stock)
-earnings
-earnings['quarterly_results']          # Earnings per Share
-earnings['quarterly_revenue_earnings'] # USD
-hist = get_earnings_history('msft')
-pd.DataFrame(hist)[['startdatetime','epsactual','epsestimate','epssurprisepct']]
-
-holders = get_holders(stock)
-info = holders["Direct Holders (Forms 3 and 4)"]
-type(info); list(info.columns)
-info=DataFrame(info, columns=['Holder','% Out'])
-file='\\datasets\\holders.csv'
-df.to_csv(current_path + file)
-
-#=====================================================================
-# News from Yahoo finance RSS feeds
-#=====================================================================
-stock="nflx"
-from pprint import pprint as pp
-from yahoo_fin import news
-news=news.get_yf_rss(stock)
-pp(news)
-df = pd.DataFrame(news,columns = ['title','published','summary'])
-df.tail()
-file='\\datasets\\news.csv'
-df.to_csv(current_path + file)
-
-#=====================================================================
-# Portfolio
-#=====================================================================
-stock=["YUM","AMZN"]
-price_data = {ticker : get_data(ticker) for ticker in sp}
-pp(price_data)  # for dictionary: type(price_data)
-
-price_data[stock]["adjclose"]
-
-df = pd.DataFrame(news,columns = ['title','published','summary'])
-price_data.head()
-
-# saving csv file using path
-current_path = os.getcwd()
-file='\\datasets\\price_data.csv'
-price_data.to_csv(current_path + file)
-
-ret_m=ret.groupby('Year').sum()
-ret_m.head(); ret_m.tail()
-
-df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
-df.head(); df.tail()
-rets=[]; vol=[]
-for ticker in list(df):
-    ret=np.log(df[ticker]).diff()             # Log Return
-    ret=ret.dropna()
-    r=np.mean(ret); v=np.std(ret)
-    rets.append(r*252)
-    vol.append(v*sqrt(252))
-
-plt.scatter(vol,rets,marker='o')
-plt.show()
-frame=DataFrame(np.random.randn(4,3),columns=['b','d','e'],index=['utah','ohio','texas','oregon'])
-frame
-
-#=====================================================================
-# Monthly Returns
-#=====================================================================
-df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
-df.head(); df.tail()
-ret=np.log(df.MSCI_AC_WORLD).diff()             # Log Return
-ret=ret.dropna(); ret.head(); ret.tail()
-ret=pd.DataFrame(ret)
-type(ret); len(ret);
-
-ret['Month']=ret.index.month
-ret['Year']=ret.index.year
-ret.head(); ret.tail()
-
-ret_m=ret.groupby(['Year','Month']).sum()
-ret_m.head(); ret_m.tail()
-ret_m.to_csv('ret_m.csv')
+start_date = st.sidebar.date_input("Start date", ago)
+end_date = st.sidebar.date_input("End date", yesterday)
 
 
 
-# Merging datasets by date
-df = pd.read_csv('data_MSCI.csv',index_col='date', parse_dates=['date'])
-df=pd.DataFrame(df); us=pd.DataFrame(df.us);uk=pd.DataFrame(df.uk)
-uk.head(); uk.tail()
+# Retrieving tickers data
+ticker_list = pd.read_csv('https://raw.githubusercontent.com/dataprofessor/s-and-p-500-companies/master/data/constituents_symbols.txt')
+tickerSymbol = st.sidebar.selectbox('Stock ticker', ticker_list) # Select ticker symbol
+tickerData = yf.Ticker(tickerSymbol) # Get ticker data
+tickerDf = tickerData.history(period='1d', start=start_date, end=end_date) #get the historical prices for this ticker
 
-pd.merge(us,uk,left_index=True,right_index=True)
-pd.merge(us,uk[3:],left_index=True,right_index=True)
+# Ticker information
+string_logo = '<img src=%s>' % tickerData.info['logo_url']
+st.markdown(string_logo, unsafe_allow_html=True)
+
+string_name = tickerData.info['longName']
+st.header('**%s**' % string_name)
+
+## Buttons
+if st.button("stock description"):
+    st.info(tickerData.info['longBusinessSummary'])
+# string_summary = tickerData.info['longBusinessSummary']
+# st.info(string_summary)
+
+# Ticker data
+st.header('**Ticker data**')
+st.write(tickerDf)
+
+# Bollinger bands
+st.header('**Bollinger Bands**')
+qf=cf.QuantFig(tickerDf,title='First Quant Figure',legend='top',name='GS')
+qf.add_bollinger_bands()
+fig = qf.iplot(asFigure=True)
+st.plotly_chart(fig)
+
+## Error/message text
+st.success("Successful")
+st.info("Information!")
+st.warning("This is a warning")
+st.error("This is an error!")
+st.exception("NameError('Error name is not defined')")
+
+st.markdown("**Disclaimers**")
+st.markdown("- Web application built by Hyeonjong Jung. March 2021.")
+st.markdown("- All data and analysis used herein are for illustration purposes only. All data and analysis are intended for these purposes and should not be considered as specific investment advice")
+st.sidebar.markdown('<a href="mailto:hyeonjong.jung@gmail.com">Contact me</a>', unsafe_allow_html=True)
