@@ -1,0 +1,99 @@
+# streamlit run market_analysis_e.py
+
+import streamlit as st
+# from yahoo_fin.stock_info import *
+# import yfinance as yf
+import pandas as pd
+# import cufflinks as cf
+from datetime import datetime, timedelta
+import os
+
+# Retrieving tickers data
+current_path = os.getcwd()
+file='\\datasets\\RAI_summary.csv'
+rai=pd.read_csv(current_path + file)
+rai.index=pd.to_datetime(rai["DATE"])
+rai.index=rai.index.strftime('%Y-%m')
+
+# App title
+st.markdown("# Market Analysis")
+st.markdown("Shown are the regime analysis and risk indicators")
+st.markdown("**Notifications**")
+st.markdown("- Data retrieved from Korea Investment Securities\n"
+            "- Test version 2021-03-08")
+
+# Sidebar
+st.sidebar.subheader('Parmeter Tuning')
+ago = datetime.now() - timedelta(365*15)
+yesterday = datetime.now() - timedelta(1)
+start_date = st.sidebar.date_input("Start date", ago)
+end_date = st.sidebar.date_input("End date", yesterday)
+level = st.slider("", ago, yesterday)
+add_slider = st.sidebar.slider('기간을 선택하세요.', ago, yesterday, (ago, yesterday))
+# Index information
+st.header('**Risk Appetite Index**')
+st.markdown('글로벌 위험선호지수(RAI)란 자산군의 위험조정성과 변화를 통해 투자자들의 위험 선호도를 측정한 지수입니다. 글로벌 주식, 채권, 원자재, 현금 등의 자산군에서 추출한 리스크 프리미엄의 변동을 확인해 투자자들의 위험선호가 어떻게 변화되는지 확인합니다. 글로벌 위험선호지수가 0에 가까울수록 fear 영역, 100에 가까울수록 greed 영역으로 판단합니다. RAI가 극단값에 가까울수록 수익률 반전 가능성이 높아질 수 있어 contrarian 지표로 활용합니다. 위험선호도 외에 펀더멘털 요인이 RAI에 영향을 미칠 수 있어 실제 투자의사결정 시에는 경험과 판단 등 정성적 정보를 함께 고려하는 것이 바람직합니다. ')
+
+# Charting
+st.text('Global RAI chart')
+st.write(rai.iloc[:,1:4])
+
+if st.checkbox('Show Global RAI chart'):
+    chart_data=pd.DataFrame(rai.iloc[:,1:4], columns=rai.columns[1:4])
+    st.line_chart(chart_data)
+
+#====================================================
+
+# tickerSymbol = st.sidebar.selectbox('Stock ticker', ticker["Security"])
+# selected = ticker.loc[ticker["Security"]==tickerSymbol,["Symbol"]]
+# tickerData = yf.Ticker(selected.iloc[0]["Symbol"]) # Get ticker data
+# tickerDf = tickerData.history(period='1d', start=start_date, end=end_date) #get the historical prices for this ticker
+
+# Ticker information
+# string_logo = '<img src=%s>' % tickerData.info['logo_url']
+# st.markdown(string_logo, unsafe_allow_html=True)
+# string_name = tickerData.info['longName']
+# abb_name = selected.iloc[0]["Symbol"]
+# st.header('**%s**' % string_name)
+# st.subheader(abb_name)
+
+## Buttons
+# if st.button("stock description"):
+#    st.info(tickerData.info['longBusinessSummary'])
+
+# Ticker data
+# st.header('**Market Price**')
+# tickerDf.index = tickerDf.index.strftime('%Y-%m-%d')
+# st.write(tickerDf.iloc[:,0:5])
+
+# Bollinger bands
+# st.header('**Bollinger Bands**')
+# qf=cf.QuantFig(tickerDf,title='First Quant Figure',legend='top',name='GS')
+# qf.add_bollinger_bands()
+# fig = qf.iplot(asFigure=True)
+# st.plotly_chart(fig)
+
+# Fundamentals
+# st.header('**Fundamentals**')
+# income_statement = get_income_statement(abb_name, yearly=False)
+# income_statement.columns = income_statement.columns.strftime('%Y-%m-%d')
+# st.write(income_statement)
+
+# News from Yahoo finance RSS feeds
+# from pprint import pprint as pp
+# from yahoo_fin import news
+# news=news.get_yf_rss(abb_name)
+# df = pd.DataFrame(news,columns = ['title','published','summary'])
+# st.write(df)
+
+## Error/message text
+st.success("Successful")
+st.info("Information!")
+st.warning("This is a warning")
+st.error("This is an error!")
+st.exception("NameError('Error name is not defined')")
+
+st.markdown("**Disclaimers**")
+st.markdown("- Web application built by Hyeonjong Jung. March 2021.")
+st.markdown("- All data and analysis used herein are for illustration purposes only. All data and analysis are intended for these purposes and should not be considered as specific investment advice")
+st.sidebar.markdown('<a href="mailto:hyeonjong.jung@gmail.com">Contact me</a>', unsafe_allow_html=True)
