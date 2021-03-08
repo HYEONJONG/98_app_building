@@ -4,6 +4,8 @@ http://theautomatic.net/2018/07/31/how-to-get-live-stock-prices-with-python/
 https://www.r-bloggers.com/2018/07/how-to-get-live-stock-prices-with-python/
 https://finance.yahoo.com/quote/AMZN/holders?p=AMZN
 
+# Constituents update (list.csv)
+
 import pandas as pd
 from yahoo_fin.stock_info import *
 from pandas import Series, DataFrame
@@ -22,9 +24,19 @@ pd.set_option('display.width', 1000)
 # get list of tickers
 sp = tickers_sp500()
 tickers_sp500(True)
+name_sp500 = DataFrame(tickers_sp500(True), columns=["Symbol","Security"])
 
 nasdaq = tickers_nasdaq()
 tickers_nasdaq(True)
+name_nasd = DataFrame(tickers_nasdaq(True), columns=["Symbol","Security Name"])
+name_nasd.columns = ["Symbol", "Security"]
+
+list=pd.concat([name_sp500, name_nasd])
+list=list[:(list.shape[0]-1)]
+list.tail(1)
+
+file='\\datasets\\list.csv'
+list.to_csv(current_path + file)
 
 dow = tickers_dow()
 dow_table = tickers_dow(True)
@@ -51,7 +63,7 @@ close.to_csv(current_path + file)
 #=====================================================================
 # get market price
 #=====================================================================
-stock="SPY"
+stock="005930.KS"
 get_live_price(stock)
 get_market_status() # currently (“PRE”), (“OPEN”), (“POST”), (“CLOSED”): +"US Market"
 get_premarket_price(stock) # if available / applicable
