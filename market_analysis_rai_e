@@ -8,7 +8,7 @@ import altair as alt
 from sklearn.linear_model import LinearRegression
 
 current_path = os.getcwd()
-file = '\\datasets\\raw_RAI_summary.csv'
+file_rai = '\\datasets\\raw_rai_summary.csv'
 
 def download_csv(name, df):
     csv = df.to_csv(index=False)
@@ -28,7 +28,8 @@ def df_filter(message, df):
     return filtered_df
 
 if __name__ == '__main__':
-    df = pd.read_csv(current_path + file)
+
+    df = pd.read_csv(current_path + file_rai)
     st.header('**Global Risk Appetite Index**')
     st.markdown('글로벌 위험선호지수(RAI)란 자산군의 위험조정성과 변화를 통해 투자자들의 위험 선호도를 측정한 지수입니다. 글로벌 주식, 채권, 원자재, 현금 등의 자산군에서 추출한 리스크 프리미엄의 변동을 확인해 투자자들의 위험선호가 어떻게 변화되는지 확인합니다. 글로벌 위험선호지수가 0에 가까울수록 fear 영역, 100에 가까울수록 greed 영역으로 판단합니다. RAI가 극단값에 가까울수록 수익률 반전 가능성이 높아질 수 있어 contrarian 지표로 활용합니다. 위험선호도 외에 펀더멘털 요인이 RAI에 영향을 미칠 수 있어 실제 투자의사결정 시에는 경험과 판단 등 정성적 정보를 함께 고려하는 것이 바람직합니다. ')
     filtered_df = df_filter('기간을 선택하세요',df)
@@ -59,9 +60,6 @@ if __name__ == '__main__':
     a = alt.Chart(profile).mark_area(opacity=1).encode(x='risk(%)', y='return(%)', tooltip=['risk(%)', 'return(%)','asset'])
     b = alt.Chart(profile).mark_area(opacity=0.6).encode(x='risk(%)', y='fitted',color=alt.value('red'))
     st.altair_chart((a.mark_circle(size=60) + b.mark_line()), use_container_width=True)
-
-
-
 
     st.subheader('**RAI and MSI ACWI**')
     a = alt.Chart(filtered_df).mark_area(opacity=1).encode(x='DATE', y='coef')
