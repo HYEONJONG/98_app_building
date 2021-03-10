@@ -64,15 +64,15 @@ if __name__ == '__main__':
     st.subheader('**RAI and MSI ACWI**')
     a = alt.Chart(filtered_df).mark_area(opacity=1).encode(x='DATE', y='coef')
     b = alt.Chart(filtered_df).mark_area(opacity=0.6).encode(x='DATE', y='MSCI AC World',color=alt.value('red'))
-    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red'), use_container_width=True)
+    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
 
     st.subheader('**RAI and VIX**')
     a = alt.Chart(filtered_df).mark_area(opacity=1).encode(x='DATE', y='coef')
     b = alt.Chart(filtered_df).mark_area(opacity=0.6).encode(x='DATE', y='CBOE VIX',color=alt.value('red'))
-    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red'), use_container_width=True)
+    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
 
     st.subheader('**RAI and AAII Sentiment Bullish Index**')
     a = alt.Chart(filtered_df).mark_area(opacity=1).encode(x='DATE', y='coef')
     b = alt.Chart(filtered_df).mark_area(opacity=0.6).encode(x='DATE', y='AAII Sentiment Bullish',color=alt.value('red'))
-    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red'), use_container_width=True)
+    st.altair_chart((a.mark_line() + b.mark_line()).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
 
