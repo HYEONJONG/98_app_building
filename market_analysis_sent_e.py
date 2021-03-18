@@ -100,37 +100,16 @@ if __name__ == '__main__':
     df_stacked = df_stacked.reset_index()
     df_stacked.columns = ["industry", "time", "sentiment"]
 
-    num = np.arange(1, len(df_stacked["time"]))
+    num = np.arange(1, len(heat.columns))
     freq = np.percentile(num, np.arange(0, 11) * 10, interpolation='nearest')
     times = df_stacked["time"].values[freq]
 
     r = alt.Chart(df_stacked).mark_rect().encode(
-        alt.X('time', axis=alt.Axis(values=
-                                    ['2008-05-30',
-                                     '2009-08-31',
-                                     '2010-12-30',
-                                     '2012-03-30',
-                                     '2013-06-28',
-                                     '2014-10-31',
-                                     '2016-01-29',
-                                     '2017-04-28',
-                                     '2018-07-31',
-                                     '2019-11-29',
-                                     '2021-02-26']
-                                    )),
+        alt.X('time', axis=alt.Axis(values=times)),
         alt.Y('industry:O'),
         alt.Color('sentiment:Q', scale=alt.Scale(scheme='oranges'))
-    ).properties(height=300, width=800)
+     ).properties(height=300, width=800)
     st.altair_chart(r)
-
-    # check why times(list) does not work
-    
-    # r = alt.Chart(df_stacked).mark_rect().encode(
-    #    alt.X('time', axis=alt.Axis(values=times)),
-    #    alt.Y('industry:O'),
-    #    alt.Color('sentiment:Q', scale=alt.Scale(scheme='oranges'))
-    # ).properties(height=300, width=800)
-    # st.altair_chart(r)
 
     # industry comparison
     st.subheader('Industry Comparison')
@@ -143,3 +122,4 @@ if __name__ == '__main__':
     a = alt.Chart(stdzed).encode(x='Industry', y=alt.Y('3년 평균',scale=alt.Scale(domain=(0, 70))))
     b = alt.Chart(stdzed).encode(x='Industry', y=alt.Y('현재',scale=alt.Scale(domain=(0, 70))), color=alt.value('red'))
     st.altair_chart((a.mark_bar() + b.mark_circle(size=60)).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
+
