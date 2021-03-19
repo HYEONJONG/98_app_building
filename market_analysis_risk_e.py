@@ -22,7 +22,7 @@ def download_csv(name, df):
     return file
 
 def df_filter(message, df):
-    slider_1, slider_2 = st.slider('%s' % (message), 0, len(df) - 1, [len(df) - 20, len(df) - 1], 1)
+    slider_1, slider_2 = st.slider('%s' % (message), 0, len(df) - 1, [len(df) - 200, len(df) - 1], 1)
     start_date = datetime.datetime.strptime(str(df.iloc[slider_1][0]).replace('.0', ''), '%Y-%m-%d')
     start_date = start_date.strftime('%d %b %Y')
     end_date = datetime.datetime.strptime(str(df.iloc[slider_2][0]).replace('.0', ''), '%Y-%m-%d')
@@ -46,34 +46,8 @@ if __name__ == '__main__':
     df = df.iloc[157:,:]  # since 2005
     df = df.replace(',', '', regex=True)  # remove comma
 
-    #==============================================================================
-    tail = df[['GRCI_안정국면', 'GRCI_위기국면', 'KRCI_안정국면', 'KRCI_위기국면']]
-    type(tail)
-
-    tail.dtypes
-    #==============================================================================
-
-    tail.apply(pd.to_numeric, errors="ignore")
-
-
-    df.convert_objects(convert_numeric=True)
-
-    tail = tail["GRCI_안정국면"].replace('1',100)
-    tail = tail["GRCI_안정국면"].replace('', 0)
-    tail
-
-    df["GRCI_위기국면"]==1
-
-
-
-    tail=pd.DataFrame(tail)
-    tail
-
-    df['product'] =
-
-
-    df = tail.replace("", 0, regex=True)  # remove comma
-    df[]
+    df[['GRCI_안정국면', 'GRCI_위기국면', 'KRCI_안정국면', 'KRCI_위기국면']] = df[['GRCI_안정국면', 'GRCI_위기국면', 'KRCI_안정국면', 'KRCI_위기국면']].replace("  ", 0)
+    df[['GRCI_안정국면', 'GRCI_위기국면', 'KRCI_안정국면', 'KRCI_위기국면']] = df[['GRCI_안정국면', 'GRCI_위기국면', 'KRCI_안정국면', 'KRCI_위기국면']].replace("1",1)
 
     st.sidebar.markdown('**Global Risk Board**')
     st.sidebar.markdown(''' 
@@ -128,24 +102,58 @@ if __name__ == '__main__':
     chart = alt.Chart(filtered_df).encode(x='Date', y=tickerSymbol).interactive()
     st.altair_chart(chart.mark_line(), use_container_width=True)
 
+    # Charts
+    a = alt.Chart(filtered_df)\
+        .mark_line()\
+        .encode(x='Date', y='MSCI ACWI').interactive()
+    b = alt.Chart(filtered_df)\
+        .mark_line()\
+        .encode(x='Date', y='GRCI', color=alt.value('red')).interactive()
+    c = alt.Chart(filtered_df)\
+        .mark_line()\
+        .encode(x='Date', y='KOSPI').interactive()
+    d = alt.Chart(filtered_df)\
+        .mark_line()\
+        .encode(x='Date', y='KRCI', color=alt.value('red')).interactive()
+    e = alt.Chart(filtered_df)\
+        .mark_area(opacity=0.5, color="grey")\
+        .encode(x='Date', y='GRCI_안정국면').interactive()
+    f = alt.Chart(filtered_df)\
+        .mark_area(opacity=0.5, color="red")\
+        .encode(x='Date', y='GRCI_위기국면', color=alt.value('red')).interactive()
+    g = alt.Chart(filtered_df)\
+        .mark_area(opacity=0.5, color="grey")\
+        .encode(x='Date', y='KRCI_안정국면').interactive()
+    h = alt.Chart(filtered_df)\
+        .mark_area(opacity=0.5, color="red")\
+        .encode(x='Date', y=alt.Y('KRCI_위기국면', scale=alt.Scale(domain=(0, 1))), color=alt.value('red')).interactive()
+
     # Equity vs RCI
     st.subheader(f'{opt} Equity vs RCI')
-    a = alt.Chart(filtered_df).encode(x='Date', y='MSCI ACWI').interactive()
-    b = alt.Chart(filtered_df).encode(x='Date', y='GRCI', color=alt.value('red')).interactive()
-    c = alt.Chart(filtered_df).encode(x='Date', y='KOSPI').interactive()
-    d = alt.Chart(filtered_df).encode(x='Date', y='KRCI', color=alt.value('red')).interactive()
-    e = alt.Chart(filtered_df).encode(x='Date', y='GRCI_안정국면').interactive()
-    f = alt.Chart(filtered_df).encode(x='Date', y='GRCI_위기국면', color=alt.value('red')).interactive()
-    g = alt.Chart(filtered_df).encode(x='Date', y='KRCI_안정국면').interactive()
-    h = alt.Chart(filtered_df).encode(x='Date', y=alt.Y('KRCI_위기국면', scale=alt.Scale(domain=(0, 1))), color=alt.value('red')).properties(height=300, width=800).interactive()
+    if opt == 'Global':
+        st.altair_chart((a + b).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
+    elif opt == 'Korea':
+        st.altair_chart((c + d).resolve_scale(y='independent').configure_axisRight(labelColor='red', titleColor='red'), use_container_width=True)
 
-    st.altair_chart(h.mark_line())
-    st.altair_chart(h.mark_area())
-
-    filtered_df["KRCI_위기국면"]
+    # Regime vs RCI
+    st.subheader(f'{opt} Risk regime and RCI')
+    if opt == 'Global':
+        st.altair_chart(b + e + f, use_container_width=True)
+    elif opt == 'Korea':
+        st.altair_chart(d + g + h, use_container_width=True)
 
 
+    #===================
+    # Regime vs RCI
+    df = pd.read_csv(current_path + file_table)
+    df = df.replace(np.nan, '', regex=True)
+    GRCI_table = df.iloc[0:12,:]
+    KRCI_table = df.iloc[13:,:]
 
-
+    st.subheader(f'{opt} Riskboard')
+    if opt == 'Global':
+        GRCI_table
+    elif opt == 'Korea':
+        KRCI_table
 
 
