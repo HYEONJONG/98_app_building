@@ -32,6 +32,7 @@ def df_filter(message, df):
     filtered_df = df.iloc[slider_1:slider_2 + 1][:].reset_index(drop=True)
     return filtered_df
 
+
 if __name__ == '__main__':
     df = pd.read_csv(current_path + file_index)
     df.columns = ['Date', '단기 매크로리스크', '장기 매크로리스크', 'EM 매크로리스크',
@@ -96,6 +97,33 @@ if __name__ == '__main__':
 
     st.markdown(download_csv('Filtered Data Frame', filtered_df), unsafe_allow_html=True)
 
+    # Risk Percentile Change
+    st.subheader('Risk Percentile Change')
+
+    def df_filter2(message, df):
+        slider_2 = st.slider('%s' % (message), 0, len(df) - 1, len(df) - 1)
+        NOW = datetime.datetime.strptime(str(df.iloc[slider_2][0]).replace('.0', ''), '%Y-%m-%d')
+        NOW = NOW.strftime('%d %b %Y')
+        st.info('Now: **%s**' % (NOW))
+        filtered_df2 = df.iloc[(slider_2 + 1 -3 * 52):slider_2 + 1][:].reset_index(drop=True)
+        return filtered_df2
+
+    filtered_df2 = df_filter2('시점을 선택하세요', df)
+    perc = filtered_df2.iloc[:,1:25].rank(pct = True).tail(1)
+    perc = perc.T
+    perc["var"]=perc.index
+    perc["avg"] = .5
+    perc.columns = ["percentile", "variable","average"]
+    perc = perc.sort_values("percentile", ascending=False)
+
+    d = alt.Chart(perc).mark_bar().encode(
+        x='percentile', y=alt.Y('variable', sort='-x'),
+        color = alt.condition(
+        alt.datum.percentile > 0.5,
+        alt.value("orange"),
+        alt.value("steelblue")))
+    st.altair_chart(d, use_container_width=True)
+    
     # Sub risk Index
     st.subheader('세부 리스크 지표')
     tickerSymbol = st.selectbox('리스크 지표를 선택하세요', df.columns[1:23])
@@ -141,19 +169,5 @@ if __name__ == '__main__':
         st.altair_chart(b + e + f, use_container_width=True)
     elif opt == 'Korea':
         st.altair_chart(d + g + h, use_container_width=True)
-
-
-    #===================
-    # Regime vs RCI
-    df = pd.read_csv(current_path + file_table)
-    df = df.replace(np.nan, '', regex=True)
-    GRCI_table = df.iloc[0:12,:]
-    KRCI_table = df.iloc[13:,:]
-
-    st.subheader(f'{opt} Riskboard')
-    if opt == 'Global':
-        GRCI_table
-    elif opt == 'Korea':
-        KRCI_table
 
 
