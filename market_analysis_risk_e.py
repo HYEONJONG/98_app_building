@@ -123,10 +123,15 @@ if __name__ == '__main__':
         alt.value("orange"),
         alt.value("steelblue")))
     st.altair_chart(d, use_container_width=True)
-    
+
     # Sub risk Index
     st.subheader('세부 리스크 지표')
     tickerSymbol = st.selectbox('리스크 지표를 선택하세요', df.columns[1:23])
+    dfs = pd.read_csv(current_path + file_table)
+    dfs.columns = ['index', 'description']
+    txt = dfs[dfs['index'] == tickerSymbol]['description']
+    st.markdown(txt[0])
+
     chart = alt.Chart(filtered_df).encode(x='Date', y=tickerSymbol).interactive()
     st.altair_chart(chart.mark_line(), use_container_width=True)
 
