@@ -33,7 +33,7 @@ def df_filter(message, df):
     filtered_df['Date'] = pd.to_datetime(filtered_df['Date'])
     return filtered_df
 
-#====================================
+#====================================#
 # Side bar Selection
 #====================================
 
