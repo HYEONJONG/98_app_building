@@ -1,1 +1,1 @@
-worker: python market_analysis_e.py
+web: python market_analysis_e.py
