@@ -9,12 +9,12 @@ import altair as alt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-current_path = os.getcwd()
-file_rai = '\\datasets\\raw_rai_summary.csv'
-file_sent = '\\datasets\\raw_sentiment.csv'
-file_heat = '\\datasets\\raw_heatmap.csv'
-file_index = '\\datasets\\raw_riskboard_index.csv'
-file_table = '\\datasets\\raw_riskboard_table.csv'
+# current_path = os.getcwd()
+file_rai = 'https://raw.github.com/HYEONJONG/98_app_building/master/raw_rai_summary.csv'
+file_sent = 'https://raw.github.com/HYEONJONG/98_app_building/master/raw_sentiment.csv'
+file_heat = 'https://raw.github.com/HYEONJONG/98_app_building/master/raw_heatmap.csv'
+file_index = 'https://raw.github.com/HYEONJONG/98_app_building/master/raw_riskboard_index.csv'
+file_table = 'https://raw.github.com/HYEONJONG/98_app_building/master/raw_riskboard_table.csv'
 
 def download_csv(name, df):
     csv = short.to_csv(index=False)
@@ -53,7 +53,7 @@ if option == 'Global Risk Board':
     st.sidebar.text("")
     st.sidebar.text("")
 
-    df = pd.read_csv(current_path + file_index)
+    df = pd.read_csv(file_index)
     df.columns = ['Date', '단기 매크로리스크', '장기 매크로리스크', 'EM 매크로리스크',
     'G7 OECD 경기선행지수',
     'KR 선행지수 순환변동치', 'KR 광공업 생산(YoY %)', 'KR 수출 증감률(YoY %)', 'KR 소매 판매(YoY %)',
@@ -92,7 +92,8 @@ if option == 'Global Risk Board':
     # Sub risk Index
     st.subheader('2. 세부 리스크 지표')
     tickerSymbol = st.selectbox('리스크 지표를 선택하세요', df.columns[1:23])
-    dfs = pd.read_csv(current_path + file_table)
+    # dfs = pd.read_csv(current_path + file_table)
+    dfs = pd.read_csv(file_table)
     dfs.columns = ['index', 'description']
     txt = dfs[dfs['index'] == tickerSymbol]['description']
     st.markdown(", ".join(txt)) # into String
@@ -169,7 +170,8 @@ if option == 'Sentiment Board':
     st.sidebar.text("")
     st.sidebar.text("")
 
-    df = pd.read_csv(current_path + file_sent)
+    # df = pd.read_csv(current_path + file_sent)
+    df = pd.read_csv(file_sent)
     df = df.replace(',', '', regex=True)  # remove comma
     df["KOSPI"] = pd.to_numeric(df["KOSPI"])  # series into numeric
 
@@ -227,7 +229,8 @@ if option == 'Sentiment Board':
     st.markdown(
         '국내 주식시장을 구성하는 개별 업종의 감성지수를 통해 감성의 변화를 확인합니다. 업종 리포트에 나타난 감성이 부정적일수록 밝게, 긍정적일수록 어둡게 표시됩니다. 감성지수는 시장과열 또는 쏠림(crowdedness)에 대한 지표로 해석하는 것이 가능합니다. ')
 
-    heat = pd.read_csv(current_path + file_heat)
+    # heat = pd.read_csv(current_path + file_heat)
+    heat = pd.read_csv(file_heat)
     heat = pd.DataFrame(heat.iloc[1:, :])
     heat.index = heat["Industry"]
     heat = heat.iloc[:, 1:]
@@ -278,7 +281,8 @@ if option == 'Risk Appetite Index':
     st.sidebar.text("")
     st.sidebar.text("")
 
-    df = pd.read_csv(current_path + file_rai)
+    # df = pd.read_csv(current_path + file_rai)
+    df = pd.read_csv(file_rai)
     st.header('Risk Appetite Index')
     st.markdown(
         '투자자들은 동일 리스크에 대해 서로 다르게 인식하거나 다양한 태로를 취합니다. 글로벌 위험선호지수(RAI)란 자산군의 위험조정성과 변화를 통해 투자자들의 위험 선호도를 측정한 지수입니다. 글로벌 주식, 채권, 원자재, 현금 등의 자산군에서 추출한 리스크 프리미엄의 변동을 확인해 투자자들의 위험선호가 어떻게 변화되는지 확인합니다. ')
@@ -357,4 +361,3 @@ st.sidebar.info('''
 
   Analysed and designed by: hyeonjong.jung@gmail.com
   ''')
-
