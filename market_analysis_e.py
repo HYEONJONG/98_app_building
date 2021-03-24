@@ -103,24 +103,24 @@ if option == 'Global Risk Board':
 
     # Charts
     a = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='MSCI ACWI').interactive()
-    b = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='GRCI', color=alt.value('red')).interactive()
+    b = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='GRCI', color=alt.value('#d62728')).interactive()
     c = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='KOSPI').interactive()
-    d = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='KRCI', color=alt.value('red')).interactive()
+    d = alt.Chart(filtered_df).mark_line().encode(x=alt.X('Date', title = None), y='KRCI', color=alt.value('#d62728')).interactive()
     e = alt.Chart(filtered_df).mark_area(opacity=0.5, color="grey").encode(x=alt.X('Date', title = None), y=alt.Y('GRCI_안정국면', title = None)).interactive()
-    f = alt.Chart(filtered_df).mark_area(opacity=0.5, color="red").encode(x=alt.X('Date', title = None), y=alt.Y('GRCI_위기국면', title = None), color=alt.value('red')).interactive()
+    f = alt.Chart(filtered_df).mark_area(opacity=0.5, color="#d62728").encode(x=alt.X('Date', title = None), y=alt.Y('GRCI_위기국면', title = None), color=alt.value('red')).interactive()
     g = alt.Chart(filtered_df).mark_area(opacity=0.5, color="grey").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_안정국면', title = None)).interactive()
-    h = alt.Chart(filtered_df).mark_area(opacity=0.5, color="red").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_위기국면', title = None), scale=alt.Scale(domain=(0, 1)), color=alt.value('red')).interactive()
+    h = alt.Chart(filtered_df).mark_area(opacity=0.5, color="#d62728").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_위기국면', title = None), scale=alt.Scale(domain=(0, 1)), color=alt.value('red')).interactive()
 
     # Equity vs RCI
     st.subheader(f'3. {opt}와 주가지수 추이')
     if opt == 'GRCI (Global Risk Composite Index)':
         st.altair_chart((a + b).resolve_scale(y='independent').
-                        configure_axisRight(labelColor='red', titleColor='red').
+                        configure_axisRight(labelColor='#d62728', titleColor='#d62728').
                         configure_axisLeft(labelColor='#1f77b4', titleColor='#1f77b4'),
                         use_container_width=True)
     elif opt == 'KRCI (Korea Risk Composite Index)':
         st.altair_chart((c + d).resolve_scale(y='independent').
-                        configure_axisRight(labelColor='red', titleColor='red').
+                        configure_axisRight(labelColor='#d62728', titleColor='#d62728').
                         configure_axisLeft(labelColor='#1f77b4', titleColor='#1f77b4'),
                         use_container_width=True)
 
@@ -192,7 +192,9 @@ if option == 'Sentiment Board':
     st.markdown(download_csv('Filtered Data Frame', filtered_df), unsafe_allow_html=True)
 
     st.subheader('2. 긍정어와 부정어 빈도')
-    st.markdown('일반적인 한글 감성어 사전과 기업분석 리포트의 감성어 사전은 다릅니다. 애널리스트가 감성어를 중립적, 긍정적, 부정적, 불확실성의 4가지 카테고리로 구분해 감성어 사전을 구축합니다. 기업분석 리포트의 긍정어와 부정어(또는 불확실)의 차이를 통해 감성 또는 어조의 변화를 확인합니다. 많은 경우 긍정적인 어조를 사용하지만, 불확실성이나 부정적 이베트 시에 사용되는 텍스트가 변화가 나타납니다.')
+    st.markdown(
+        '일반적인 한글 감성어 사전과 기업분석 리포트의 감성어 사전은 다릅니다. 애널리스트가 감성어를 중립적, 긍정적, 부정적, 불확실성의 4가지 카테고리로 구분해 감성어 사전을 구축합니다. 기업분석 리포트의 긍정어와 부정어(또는 불확실)의 차이를 통해 감성 또는 어조의 변화를 확인합니다. 많은 경우 긍정적인 어조를 사용하지만, 불확실성이나 부정적 이베트 시에 사용되는 텍스트가 변화가 나타납니다.'
+    )
 
     a = alt.Chart(filtered_df).encode(x=alt.X('Date', title = None), y='긍정적')
     b = alt.Chart(filtered_df).encode(x=alt.X('Date', title = None), y='부정적', color=alt.value('red'))
