@@ -72,6 +72,10 @@ if option == 'Global Risk Board':
     st.markdown('리스크 스코어보드는 국내와 글로벌 자산시장의 전반적인 위기수준을 나타냅니다. 매크로와 함께 주식, 금리, 외환시장 등 22개 세부 리스크 요인을 확인할 수 있도록 만든 스코어보드를 작성하고, 세부 리스크 요인을 종합해 산출한 리스크 종합지수를 통해 전반적인 위기 수준을 점검합니다. 글로벌과 국내 리스크를 구분해 GRCI와 KRCI를 주간 단위로 제시하고 있습니다.')
     opt = st.radio("Select the option", ('GRCI (Global Risk Composite Index)', 'KRCI (Korea Risk Composite Index)'))
     filtered_df = df_filter('기간을 선택하세요', df)
+    filtered_df["신흥국 국채 스프레드"] = pd.to_numeric(filtered_df["신흥국 국채 스프레드"])  # series into numeric
+    filtered_df["원달러 환율"] = pd.to_numeric(filtered_df["원달러 환율"])  # series into numeric
+    filtered_df["외국인 순매수"] = pd.to_numeric(filtered_df["외국인 순매수"])  # series into numeric
+
     st.subheader(f'1. {opt} 그래프')
     st.markdown('리스크종합지표는 직전 3년 기간 대비 현재 리스크 수준을 측정합니다. 현재 시점이 0~1 사이에서 어느 수준인지를 측정하며 높아질수록 위기에 가까워짐을 의미합니다.')
 
@@ -109,7 +113,7 @@ if option == 'Global Risk Board':
     e = alt.Chart(filtered_df).mark_area(opacity=0.5, color="grey").encode(x=alt.X('Date', title = None), y=alt.Y('GRCI_안정국면', title = None)).interactive()
     f = alt.Chart(filtered_df).mark_area(opacity=0.5, color="#d62728").encode(x=alt.X('Date', title = None), y=alt.Y('GRCI_위기국면', title = None), color=alt.value('red')).interactive()
     g = alt.Chart(filtered_df).mark_area(opacity=0.5, color="grey").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_안정국면', title = None)).interactive()
-    h = alt.Chart(filtered_df).mark_area(opacity=0.5, color="#d62728").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_위기국면', title = None), scale=alt.Scale(domain=(0, 1)), color=alt.value('red')).interactive()
+    h = alt.Chart(filtered_df).mark_area(opacity=0.5, color="#d62728").encode(x=alt.X('Date', title = None), y=alt.Y('KRCI_위기국면', title = None), color=alt.value('red')).interactive()
 
     # Equity vs RCI
     st.subheader(f'3. {opt}와 주가지수 추이')
