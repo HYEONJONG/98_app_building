@@ -97,7 +97,7 @@ if option == 'Global Risk Board':
 
     # Risk Percentile Change
     st.subheader('2. Risk Percentile Change')
-    st.markdown('직전 3년 기간 동안 개별 지표의 percent rank를 나타냅니다. 기간선택 slider의 end date를 조정하면 세부 리스크의 변화를 확인할 수 있습니다.')
+    st.markdown('리스크 종합지표는 개별 리스크 지표의 과거 대비 수준을 종합하여 산출됩니다. 과거 3년 기간 동안 개별 리스크 지표의 percent rank를 나타냅니다. 기간선택 slider의 end date를 조정하면 세부 리스크의 변화를 확인할 수 있습니다.')
     start_index = max(0, len(filtered_df) - 1 - 3 * 52)
     end_index = len(filtered_df) - 1
     end_date = filtered_df.tail(1)['Date']
@@ -401,4 +401,5 @@ st.sidebar.info('''
   All the Charts are interactive. 
 
   Analysed and designed by: hyeonjong.jung@gmail.com
+  Last updated 2021/03/26
   ''')
